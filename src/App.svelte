@@ -1,10 +1,16 @@
 <script>
-  export let name;
+  let name = "ddy";
+  let name2 = "caoqian";
+  const handleClick = () => {
+    name2 = "orange";
+  };
 </script>
 
 <main>
   <h1>Hello {name}!</h1>
   <p>Hello ddy</p>
+  <p>{name} love {name2}</p>
+  <button on:click={handleClick}>update info</button>
 </main>
 
 <style>
