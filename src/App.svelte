@@ -8,12 +8,24 @@
     people = people.filter((temp_person) => temp_person.id != id);
     console.log(e);
   };
+  let num = 1;
 </script>
+
+{#if num > 20}
+  <p>num is bigger than 20</p>
+{:else if num > 5}
+  <p>num is bigger than 5</p>
+{:else}
+  <p>good choice</p>
+{/if}
 
 <main>
   {#each people as person (person.id)}
     <div>
       <h4>{person.name}</h4>
+      {#if person.color === "black"}
+        <p><strong>good person color</strong></p>
+      {/if}
       <p>{person.age} years old, {person.color} color</p>
       <button
         on:click={(e) => {
