@@ -1,16 +1,25 @@
 <script>
   let people = [
     { name: "段誉1", color: "orange", age: 20, id: 1 },
-    { name: "段誉2", color: "red", age: 21, id: 1 },
-    { name: "段誉3", color: "black", age: 21, id: 1 },
+    { name: "段誉2", color: "red", age: 21, id: 2 },
+    { name: "段誉3", color: "black", age: 21, id: 3 },
   ];
+  const handleClick = (e, id) => {
+    people = people.filter((temp_person) => temp_person.id != id);
+    console.log(e);
+  };
 </script>
 
 <main>
-  {#each people as person}
+  {#each people as person (person.id)}
     <div>
       <h4>{person.name}</h4>
       <p>{person.age} years old, {person.color} color</p>
+      <button
+        on:click={(e) => {
+          handleClick(e, person.id);
+        }}>delete</button
+      >
     </div>
   {:else}
     <p>there is no person</p>
