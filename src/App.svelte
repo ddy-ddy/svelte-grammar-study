@@ -11,7 +11,7 @@
   };
 </script>
 
-<Modal />
+<Modal message="i am a good boy." isPromo={true} />
 
 <main>
   {#each people as person (person.id)}
