@@ -15,7 +15,14 @@
   };
 </script>
 
-<Modal message="i am a good boy." {showModal} on:click={toggleModal} />
+<Modal {showModal} on:click={toggleModal}>
+  <h3 slot="title">Add a new person</h3>
+  <form>
+    <input type="text" placeholder="name" />
+    <input type="text" placeholder="color" />
+    <button>Add Person</button>
+  </form>
+</Modal>
 
 <main>
   <button on:click={toggleModal}>open the Modal</button>
