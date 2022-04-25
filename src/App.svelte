@@ -14,10 +14,15 @@
   const toggleModal = () => {
     showModal = !showModal;
   };
+  const addPerson = (e) => {
+    const person = e.detail;
+    people = [person, ...people];
+    showModal = false;
+  };
 </script>
 
 <Modal {showModal} on:click={toggleModal}>
-  <AddPersonForm>x</AddPersonForm>
+  <AddPersonForm on:addPerson={addPerson}>x</AddPersonForm>
 </Modal>
 
 <main>
