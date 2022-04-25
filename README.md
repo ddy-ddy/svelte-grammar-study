@@ -1,109 +1,295 @@
-*Psst — looking for a more complete solution? Check out [SvelteKit](https://kit.svelte.dev), the official framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.*
+### Svelte grammar study
+- demo website: https://ddy-svelte-demo.surge.sh/
+- study resource: [learning video on youtube](https://www.youtube.com/watch?v=zojEMeQGGHs&list=PL4cUxeGkcC9hlbrVO_2QFVqVPhlZmz7tO&index=1)
 
-*Looking for a shareable component template instead? You can [use SvelteKit for that as well](https://kit.svelte.dev/docs#packaging) or the older [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
----
-
-# svelte app
-
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
-
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
+1、使用脚手架工具`degit` setting up a svelte app
 
 ```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
+'''
+#-g means installing this package globally on my compute so we can use it anywhere in any directory
+'''
+npm install -g degit    #install degit with npm
+degit sveltejs/template myproject   #create a project by degit
+npm install #install dependency package with npm
+npm run dev  #spin up a local development server to preview our project
 ```
 
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
 
 
-## Get started
+2.语法
 
-Install the dependencies...
+- Data bind
 
-```bash
-cd svelte-app
-npm install
+```javascript
+//双向绑定
+const handleInput = (e) => {
+    name2 = e.target.value;
+  };
+<input type="text" on:input={handleInput}/>
+  
+//双向绑定(方式一)
+const handleInput = (e) => {
+    name2 = e.target.value;
+  };
+<input type="text" on:input={handleInput} value={name2} />
+  
+//双向绑定(方式二)
+<input type="text" bind:value={name2} />
+
 ```
 
-...then start [Rollup](https://rollupjs.org):
+- React values
 
-```bash
-npm run dev
+```javascript
+//fullname实时变化
+let firstname = "Duan";
+let lastname = "Yu";
+$: fullname = `${firstname} + ${lastname}`;
 ```
 
-Navigate to [localhost:8080](http://localhost:8080). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
+- loop
 
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
-
-If you're using [Visual Studio Code](https://code.visualstudio.com/) we recommend installing the official extension [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode). If you are using other editors you may need to install a plugin in order to get syntax highlighting and intellisense.
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
+```javascript
+{#each people as person}
+    <div>
+      <h4>{person.name}</h4>
+      <p>{person.age} years old, {person.color} color</p>
+    </div>
+{:else}
+    <p>there is no person</p>
+{/each}
 ```
 
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
+- inline event handlers
 
+```javascript
+<script>
+  let people = [
+    { name: "段誉1", color: "orange", age: 20, id: 1 },
+    { name: "段誉2", color: "red", age: 21, id: 2 },
+    { name: "段誉3", color: "black", age: 21, id: 3 },
+  ];
+  const handleClick = (e, id) => {
+    people = people.filter((temp_person) => temp_person.id != id);
+    console.log(e);
+  };
+</script>
 
-## Single-page app mode
+<main>
+  {#each people as person (person.id)}
+    <div>
+      <h4>{person.name}</h4>
+      <p>{person.age} years old, {person.color} color</p>
+      <button on:click={(e) => {handleClick(e, person.id);}}>delete</button>  
+/*
+注意这里：
+	如果是<button on:click={handleClick(e, person.id)}}>delete</button>的话
+	不点击button也会直接调用该函数，需要用一个函数来包裹该函数
+	
+原因:
+	on:click={handleClick(e, person.id)}}是直接invoke funtion,没有declaration。
+	
+	Therefore, you need a function declaration, which will be invoked only by the click event and inside it you call your hander with as many arguments as you want.
 
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
-
-```js
-"start": "sirv public --single"
+SO解答：https://stackoverflow.com/questions/58262380/how-to-pass-parameters-to-onclick-in-svelte
+*/  
+    </div>
+  {:else}
+    <p>there is no person</p>
+  {/each}
+</main>
 ```
 
-## Using TypeScript
+- conditions
 
-This template comes with a script to set up a TypeScript development environment, you can run it immediately after cloning the template with:
-
-```bash
-node scripts/setupTypeScript.js
+```javascript
+{#if num > 20}
+  <p>num is bigger than 20</p>
+{:else if num > 5}
+  <p>num is bigger than 5</p>
+{:else}
+  <p>good choice</p>
+{/if}
 ```
 
-Or remove the script via:
+- css $ conditional styles
 
-```bash
-rm scripts/setupTypeScript.js
+```javascript
+<script>
+  let showModal = true;
+  let isPromo = true;
+</script>
+
+{#if showModal}
+  <div class="backdrop" class:promo={isPromo}>   //conditional styles
+    <div class="modal">
+      <p>sign up for offers!</p>
+    </div>
+  </div>
+{/if}
+
+<style>
+  .backdrop {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+  }
+  .modal {
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: 10% auto;
+    text-align: center;
+    background-color: white;
+  }
+  .promo .modal {
+    background: crimson;
+    color: white;
+  }
+</style>
+
 ```
 
-If you want to use `baseUrl` or `path` aliases within your `tsconfig`, you need to set up `@rollup/plugin-alias` to tell Rollup to resolve the aliases. For more info, see [this StackOverflow question](https://stackoverflow.com/questions/63427935/setup-tsconfig-path-in-svelte).
+- props
 
-## Deploying to the web
+```javascript
+//Modal.svelte
+<script>
+  export let message = "default message";
+  let showModal = true;
+  export let isPromo = false;
+</script>
 
-### With [Vercel](https://vercel.com)
+//App.svelte
+<script>
+  import Modal from "./Modal.svelte";
+  let people = [
+    { name: "段誉1", color: "orange", age: 20, id: 1 },
+    { name: "段誉2", color: "red", age: 21, id: 2 },
+    { name: "段誉3", color: "black", age: 21, id: 3 },
+  ];
+  const handleClick = (e, id) => {
+    people = people.filter((temp_person) => temp_person.id != id);
+    console.log(e);
+  };
+</script>
 
-Install `vercel` if you haven't already:
+<Modal message="i am a good boy." isPromo={true} />
 
-```bash
-npm install -g vercel
 ```
 
-Then, from within your project folder:
+- Event forwarding
 
-```bash
-cd public
-vercel deploy --name my-project
+```javascript
+//App.svelte
+<Modal message="i am a good boy." {showModal} on:click={toggleModal} />
+
+//Modal.svelte
+{#if showModal}
+  <div class="backdrop" class:promo={isPromo} on:click>
+    <div class="modal">
+      <p>{message}</p>
+    </div>
+  </div>
+{/if}
+ 
+ //注释：App是父，Modal是子继承了App，所以从App传进来的on:click可以直接在Modal中使用
 ```
 
-### With [surge](https://surge.sh/)
+- Event modifier
 
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
+```javascript
+//once - makes sure the event can only fire once (remove handler)
+//preventDefault - prevent the default action (run e.preventDefault())
+//self - only fires the event if the clicked element is the target
+<p on:click|self>{message}</p>
+<button on:click|once={toggleModal}>open the Modal</button>
 ```
 
-Then, from within your project folder:
+- slot
 
-```bash
-npm run build
-surge public my-project.surge.sh
+```javascript
+//App.svelte
+<Modal {showModal} on:click={toggleModal}>
+  <h3 slot="title">Add a new person</h3>
+  <form>
+    <input type="text" placeholder="name" />
+    <input type="text" placeholder="color" />
+    <button>Add Person</button>
+  </form>
+</Modal>
+
+//Modal.svelte
+#if showModal}
+  <div class="backdrop" class:promo={isPromo} on:click|self>
+    <div class="modal">
+      <slot name="title" />
+      <p>hello baby.</p>
+      <slot />
+    </div>
+  </div>
+{/if}
 ```
+
+- Forms(part1)
+
+```javascript
+<form on:submit|preventDefault={handleSubimt}>   
+  <input type="text" placeholder="name" bind:value={name} />
+  <input type="text" placeholder="color" bind:value={color} />
+  <input type="number" placeholder="age" bind:value={age} />
+  <button>Add Person</button>
+</form>
+//在这preventDefault的作用是防止页面再次刷新(refresh)
+//preventDefault - prevent the default action (run e.preventDefault())
+//preventDefault - class event.preventDefault() before running the handler. Useful for client-side form handling, for example.
+```
+
+- Dispatching custom event
+
+```javascript
+//Modal.svelte
+<script>
+  import { createEventDispatcher } from "svelte";
+  let dispatch = createEventDispatcher();
+  let name;
+  let color;
+  let age;
+  let skills = [];
+  const handleSubimt = () => {
+    const person = { name, color, age, skills, id: Math.random() };
+    dispatch("addPerson", person);
+  };
+</script>
+
+//App.svelte
+<script>
+  import AddPersonForm from "./AddPersonForm.svelte";
+  import Modal from "./Modal.svelte";
+  let showModal = false;
+  let people = [
+    { name: "段誉1", color: "orange", age: 20, id: 1 },
+    { name: "段誉2", color: "red", age: 21, id: 2 },
+    { name: "段誉3", color: "black", age: 21, id: 3 },
+  ];
+  const handleClick = (e, id) => {
+    people = people.filter((temp_person) => temp_person.id != id);
+    console.log(e);
+  };
+  const toggleModal = () => {
+    showModal = !showModal;
+  };
+  const addPerson = (e) => {
+    const person = e.detail;
+    people = [person, ...people];
+    showModal = false;
+  };
+</script>
+
+<Modal {showModal} on:click={toggleModal}>
+  <AddPersonForm on:addPerson={addPerson}>x</AddPersonForm>
+</Modal>
+```
+
